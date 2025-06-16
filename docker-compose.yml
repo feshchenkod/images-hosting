@@ -1,0 +1,31 @@
+services:
+  app:
+    build: .
+    container_name: images-hosting
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+      - ./images:/app/images
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    restart: unless-stopped
+    depends_on:
+      - app
+    env_file:
+      - .env
+    command: >
+      caddy reverse-proxy
+      --from ${DOMAIN}
+      --to app:8000
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
