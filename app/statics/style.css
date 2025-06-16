@@ -1,20 +1,33 @@
 .main {
     background: #F2F5FF;
+    font-family: 'Inter', sans-serif;
 }
 
 header {
-    padding: 20px;
-    border: 0px;
-
-    font-family: 'Inter';
-    font-style: normal;
     font-size: 16px;
-    line-height: 14px;
+    line-height: 1.4;
 }
 
 .upload-form {
     border: 3px dashed #0d6efd;
     border-radius: 25px;
-    height: clamp(20%, 50%, 90%);
-    width: clamp(20%, 50%, 90%);
+    background: #F2F5FF;
+    width: 90%;
+    transition: border-color 0.3s ease;
+}
+
+.upload-form:hover {
+    border-color: #003381;
+    background: #F0F0F0;
+    cursor: pointer;
+}
+
+.url-form {
+    border: 1px solid #0d6efd;
+    border-radius: 10px;
+    background: white;
+}
+
+.btn-copy:active {
+    background-color: green;
 }
