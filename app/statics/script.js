@@ -25,3 +25,31 @@ function showCopiedAlert() {
     setTimeout(() => alert.remove(), 300);
   }, 5000);
 }
+
+function onFileSelected(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const container = document.querySelector(".file-selected-container");
+
+    const alert = document.createElement("label");
+    alert.className = "alert alert-primary show w-100 mt-2 py-1";
+    alert.setAttribute("role", "alert");
+    alert.innerHTML = `
+      Selected file ${file.name}
+      <input type="button" value="x" onclick="cancelFileSelection()" class="btn btn-secondary p-0">
+      <input type="submit" value="send" class="btn btn-primary px-1">
+    `;
+
+    container.appendChild(alert);
+    const button = document.querySelector(".file-choose-container");
+    button.classList.add("d-none");
+  }
+}
+
+function cancelFileSelection() {
+  const button = document.querySelector(".file-choose-container");
+  button.classList.remove("d-none");
+
+  const container = document.querySelector(".file-selected-container");
+  container.innerHTML = "";
+}

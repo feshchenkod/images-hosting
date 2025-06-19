@@ -8,6 +8,7 @@ from utils.file_utils import is_allowed_file, get_unique_name, MAX_FILE_SIZE
 
 app = FastAPI()
 app.mount("/statics", StaticFiles(directory="app/statics"), name="statics")
+app.mount("/image", StaticFiles(directory="images"), name="image")
 templates = Jinja2Templates(directory="app/templates")
 
 @app.get("/", response_class=HTMLResponse)
@@ -21,7 +22,7 @@ async def root(request: Request):
     return templates.TemplateResponse("images.html", context=context)
 
 @app.post("/upload")
-async def upload(file: UploadFile = File(...)):
+async def upload(request: Request, file: UploadFile = File(...)):
     content = await file.read(MAX_FILE_SIZE + 1)
 
     if not is_allowed_file(Path(file.filename)):
@@ -36,7 +37,7 @@ async def upload(file: UploadFile = File(...)):
     path = images_dir/new_filename
     path.write_bytes(content)
 
-    return {"detail": "OK"}
+    return {"status": "OK", "filename": f"{new_filename}", "url": f"{request.base_url}image/{new_filename}"}
 
 if __name__ == '__main__':
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
