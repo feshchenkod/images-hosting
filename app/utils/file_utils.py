@@ -1,6 +1,6 @@
 from pathlib import Path
 import uuid
-import io, hashlib
+import hashlib
 
 ALLOWED_EXTENSIONS = ('.png', '.jpg', '.jpeg', '.gif')
 MAX_FILE_SIZE = 5 * 1024 * 1024
@@ -8,13 +8,12 @@ MAX_FILE_SIZE = 5 * 1024 * 1024
 def is_allowed_file(filename: Path) -> bool:
     return filename.suffix.lower() in ALLOWED_EXTENSIONS
 
-def get_unique_name(filename: Path):
-    return f'{uuid.uuid4()}{filename.suffix.lower()}'
+def get_unique_name(content, filename: Path):
+    return f'{calculate_sha256(content)}{filename.suffix.lower()}'
 
 
-def calculate_sha256(file):
-    return None
-
+def calculate_sha256(content):
+    return hashlib.sha256(content).hexdigest()
 
 def get_images_in_dir(directory):
     dir = Path(directory)

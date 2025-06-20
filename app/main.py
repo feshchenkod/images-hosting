@@ -40,7 +40,7 @@ async def upload(request: Request, file: UploadFile = File(...)):
                 "detail": "Content Too Large",
             }
         )    
-    new_filename = get_unique_name(Path(file.filename))
+    new_filename = get_unique_name(content, Path(file.filename))
     file_url = f"{request.base_url}image/{new_filename}"
 
     images_dir = Path("images")

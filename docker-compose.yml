@@ -6,8 +6,6 @@ services:
     volumes:
       - ./logs:/logs
       - ./images:/images
-    ports:
-      - 8000:8000
 
   caddy:
     image: caddy:2-alpine
