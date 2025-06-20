@@ -16,6 +16,11 @@ def calculate_sha256(file):
     return None
 
 
+def get_images_in_dir(directory):
+    dir = Path(directory)
+    files = [file for file in dir.iterdir() if file.is_file() and file.suffix.lower() in ALLOWED_EXTENSIONS]
+    return files
+
 if __name__ == "__main__":
     print(is_allowed_file(Path('test.jpg')))
     print(is_allowed_file(Path('test.gg')))

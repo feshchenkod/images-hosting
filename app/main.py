@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
 from pathlib import Path
-from utils.file_utils import is_allowed_file, get_unique_name, MAX_FILE_SIZE
+from utils.file_utils import is_allowed_file, get_unique_name, get_images_in_dir, MAX_FILE_SIZE
 
 app = FastAPI()
 app.mount("/statics", StaticFiles(directory="app/statics"), name="statics")
@@ -59,34 +59,19 @@ async def upload(request: Request, file: UploadFile = File(...)):
 
 @app.get("/images", response_class=HTMLResponse)
 async def root(request: Request):
-    context = {"request": request}
+    images = []
+    files = get_images_in_dir("images")
+    for file in files:
+        name = file.name
+        url = f"{request.base_url}image/{file.name}"
+        images.append({"name":name, "url": url})
+    print(images)
     return templates.TemplateResponse(
         "images.html",
         {
             "request": request,
             "status": "OK",
-            "images": [
-                {
-                    "name": "97b6d2fe-ef3c-4d0c-a6c6-8367e4948c78",
-                    "url": "http://127.0.0.1:8000/image/97b6d2fe-ef3c-4d0c-a6c6-8367e4948c78.jpg"
-                },
-                {
-                    "name": "d1a5effe-6720-41ac-95a0-1dc441134491",
-                    "url": "http://127.0.0.1:8000/image/d1a5effe-6720-41ac-95a0-1dc441134491.jpg"
-                },
-                {
-                    "name": "d1a5effe-6720-41ac-95a0-1dc441134491",
-                    "url": "http://127.0.0.1:8000/image/d1a5effe-6720-41ac-95a0-1dc441134491.jpg"
-                },
-                {
-                    "name": "d1a5effe-6720-41ac-95a0-1dc441134491",
-                    "url": "http://127.0.0.1:8000/image/d1a5effe-6720-41ac-95a0-1dc441134491.jpg"
-                },
-                {
-                    "name": "d1a5effe-6720-41ac-95a0-1dc441134491",
-                    "url": "http://127.0.0.1:8000/image/d1a5effe-6720-41ac-95a0-1dc441134491.jpg"
-                }         
-            ]
+            "images": images
         }
     )
 
