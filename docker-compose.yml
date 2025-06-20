@@ -4,8 +4,10 @@ services:
     container_name: images-hosting
     restart: unless-stopped
     volumes:
-      - ./logs:/app/logs
-      - ./images:/app/images
+      - ./logs:/logs
+      - ./images:/images
+    ports:
+      - 8000:8000
 
   caddy:
     image: caddy:2-alpine

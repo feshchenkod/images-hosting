@@ -7,9 +7,9 @@ from pathlib import Path
 from utils.file_utils import is_allowed_file, get_unique_name, get_images_in_dir, MAX_FILE_SIZE
 
 app = FastAPI()
-app.mount("/statics", StaticFiles(directory="app/statics"), name="statics")
+app.mount("/statics", StaticFiles(directory="statics"), name="statics")
 app.mount("/image", StaticFiles(directory="images"), name="image")
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
@@ -65,7 +65,6 @@ async def root(request: Request):
         name = file.name
         url = f"{request.base_url}image/{file.name}"
         images.append({"name":name, "url": url})
-    print(images)
     return templates.TemplateResponse(
         "images.html",
         {
