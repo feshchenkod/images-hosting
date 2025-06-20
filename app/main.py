@@ -62,7 +62,8 @@ async def root(request: Request):
     images = []
     files = get_images_in_dir("images")
     for file in files:
-        name = file.name
+        filename = file.name.split('.')[0]
+        name = f"{filename[:5]}...{filename[-5:]}.{file.name.split('.')[1]}"
         url = f"{request.base_url}image/{file.name}"
         images.append({"name":name, "url": url})
     return templates.TemplateResponse(
