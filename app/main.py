@@ -16,12 +16,7 @@ async def root(request: Request):
     context = {"request": request}
     return templates.TemplateResponse("index.html", context=context)
 
-@app.get("/images", response_class=HTMLResponse)
-async def root(request: Request):
-    context = {"request": request}
-    return templates.TemplateResponse("images.html", context=context)
-
-@app.post("/upload")
+@app.post("/")
 async def upload(request: Request, file: UploadFile = File(...)):
     content = await file.read(MAX_FILE_SIZE + 1)
 
@@ -31,13 +26,26 @@ async def upload(request: Request, file: UploadFile = File(...)):
         raise HTTPException(status_code=413, detail="Content Too Large")
     
     new_filename = get_unique_name(Path(file.filename))
+    file_url = f"{request.base_url}image/{new_filename}"
 
     images_dir = Path("images")
     images_dir.mkdir(exist_ok=True)
     path = images_dir/new_filename
     path.write_bytes(content)
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "status": "OK",
+            "filename": new_filename,
+            "url": file_url
+        }
+    )
 
-    return {"status": "OK", "filename": f"{new_filename}", "url": f"{request.base_url}image/{new_filename}"}
+@app.get("/images", response_class=HTMLResponse)
+async def root(request: Request):
+    context = {"request": request}
+    return templates.TemplateResponse("images.html", context=context)
 
 if __name__ == '__main__':
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

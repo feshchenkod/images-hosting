@@ -39,16 +39,15 @@ function onFileSelected(event) {
       <input type="button" value="x" onclick="cancelFileSelection()" class="btn btn-secondary p-0">
       <input type="submit" value="send" class="btn btn-primary px-1">
     `;
-
     container.appendChild(alert);
-    const button = document.querySelector(".file-choose-container");
-    button.classList.add("d-none");
+    const chooseButton = document.querySelector(".file-choose-container");
+    chooseButton.classList.add("d-none");
   }
 }
 
 function cancelFileSelection() {
-  const button = document.querySelector(".file-choose-container");
-  button.classList.remove("d-none");
+  const chooseButton = document.querySelector(".file-choose-container");
+  chooseButton.classList.remove("d-none");
 
   const container = document.querySelector(".file-selected-container");
   container.innerHTML = "";
