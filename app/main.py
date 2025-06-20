@@ -21,10 +21,25 @@ async def upload(request: Request, file: UploadFile = File(...)):
     content = await file.read(MAX_FILE_SIZE + 1)
 
     if not is_allowed_file(Path(file.filename)):
-        raise HTTPException(status_code=406, detail="Not Acceptable")
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "status": "ERROR",
+                "code": 406,
+                "detail": "Not Acceptable",
+            }
+        )    
     if len(content) > MAX_FILE_SIZE:
-        raise HTTPException(status_code=413, detail="Content Too Large")
-    
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "status": "ERROR",
+                "code": 413,
+                "detail": "Content Too Large",
+            }
+        )    
     new_filename = get_unique_name(Path(file.filename))
     file_url = f"{request.base_url}image/{new_filename}"
 
