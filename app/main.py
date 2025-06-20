@@ -45,7 +45,36 @@ async def upload(request: Request, file: UploadFile = File(...)):
 @app.get("/images", response_class=HTMLResponse)
 async def root(request: Request):
     context = {"request": request}
-    return templates.TemplateResponse("images.html", context=context)
+    return templates.TemplateResponse(
+        "images.html",
+        {
+            "request": request,
+            "status": "OK",
+            "images": [
+                {
+                    "name": "97b6d2fe-ef3c-4d0c-a6c6-8367e4948c78",
+                    "url": "http://127.0.0.1:8000/image/97b6d2fe-ef3c-4d0c-a6c6-8367e4948c78.jpg"
+                },
+                {
+                    "name": "d1a5effe-6720-41ac-95a0-1dc441134491",
+                    "url": "http://127.0.0.1:8000/image/d1a5effe-6720-41ac-95a0-1dc441134491.jpg"
+                },
+                {
+                    "name": "d1a5effe-6720-41ac-95a0-1dc441134491",
+                    "url": "http://127.0.0.1:8000/image/d1a5effe-6720-41ac-95a0-1dc441134491.jpg"
+                },
+                {
+                    "name": "d1a5effe-6720-41ac-95a0-1dc441134491",
+                    "url": "http://127.0.0.1:8000/image/d1a5effe-6720-41ac-95a0-1dc441134491.jpg"
+                },
+                {
+                    "name": "d1a5effe-6720-41ac-95a0-1dc441134491",
+                    "url": "http://127.0.0.1:8000/image/d1a5effe-6720-41ac-95a0-1dc441134491.jpg"
+                }         
+            ]
+        }
+    )
+
 
 if __name__ == '__main__':
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
