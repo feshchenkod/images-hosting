@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, UploadFile, File, HTTPException
+from fastapi import FastAPI, Request, UploadFile, File, Form, HTTPException
 from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -58,23 +58,32 @@ async def upload(request: Request, file: UploadFile = File(...)):
     )
 
 @app.get("/images", response_class=HTMLResponse)
-async def root(request: Request):
+async def images(request: Request, deleted = None):
     images = []
     files = get_images_in_dir("images")
     for file in files:
-        filename = file.name.split('.')[0]
-        name = f"{filename[:5]}...{filename[-5:]}.{file.name.split('.')[1]}"
         url = f"{request.base_url}image/{file.name}"
-        images.append({"name":name, "url": url})
+        images.append({"name":file.name, "url": url})
     return templates.TemplateResponse(
         "images.html",
         {
             "request": request,
             "status": "OK",
-            "images": images
+            "images": images,
+            "deleted": deleted
         }
     )
 
+@app.post("/delete")
+async def delete(request: Request, api_key: str = Form(...), image_name: str = Form(...)):
+        if api_key != "admin":
+            return await images(request, False)
+        else:
+            images_dir = Path("images")
+            path = images_dir/image_name
+            if path.exists():
+                path.unlink()
+            return await images(request, True)
 
 if __name__ == '__main__':
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
