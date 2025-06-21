@@ -3,6 +3,8 @@ services:
     build: .
     container_name: images-hosting
     restart: unless-stopped
+    env_file:
+      - .env
     volumes:
       - ./logs:/logs
       - ./images:/images

@@ -2,9 +2,13 @@ from fastapi import FastAPI, Request, UploadFile, File, Form, HTTPException
 from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-import uvicorn
+from dotenv import load_dotenv
 from pathlib import Path
+import uvicorn
+import os
 from utils.file_utils import is_allowed_file, get_unique_name, get_images_in_dir, MAX_FILE_SIZE
+
+load_dotenv()
 
 app = FastAPI()
 app.mount("/statics", StaticFiles(directory="statics"), name="statics")
@@ -76,7 +80,7 @@ async def images(request: Request, deleted = None):
 
 @app.post("/delete")
 async def delete(request: Request, api_key: str = Form(...), image_name: str = Form(...)):
-        if api_key != "admin":
+        if api_key != os.getenv('API_KEY'):
             return await images(request, False)
         else:
             images_dir = Path("images")
