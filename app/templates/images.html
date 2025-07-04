@@ -120,14 +120,14 @@
         integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
         crossorigin="anonymous"></script>
     <script>
-        const exampleModal = document.getElementById('deleteModal')
-        if (exampleModal) {
-            exampleModal.addEventListener('show.bs.modal', event => {
+        const deleteModal = document.getElementById('deleteModal')
+        if (deleteModal) {
+            deleteModal.addEventListener('show.bs.modal', event => {
                 const button = event.relatedTarget
                 const imageName = button.getAttribute('data-bs-item-name')
 
-                const modalTitle = exampleModal.querySelector('.modal-title')
-                const modalBodyInput = exampleModal.querySelector('.modal-body input')
+                const modalTitle = deleteModal.querySelector('.modal-title')
+                const modalBodyInput = deleteModal.querySelector('.modal-body input')
                 modalBodyInput.value = imageName
             })
         }

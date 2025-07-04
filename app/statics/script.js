@@ -52,25 +52,3 @@ function cancelFileSelection() {
   const container = document.querySelector(".file-selected-container");
   container.innerHTML = "";
 }
-
-function deleteAction() {
-  alert("Nope!");
-  const container = document.querySelector(".delete-alert-container");
-
-  const alert = document.createElement("div");
-  alert.className =
-    "alert alert-success alert-warning fade show w-100 mt-2 py-1";
-  alert.setAttribute("role", "alert");
-  alert.innerHTML = `
-    Nope :)
-    <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
-  `;
-
-  container.appendChild(alert);
-
-  setTimeout(() => {
-    alert.classList.remove("show");
-    alert.classList.add("hide");
-    setTimeout(() => alert.remove(), 300);
-  }, 5000);
-}
