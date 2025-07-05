@@ -39,7 +39,6 @@
 
         <form id="drop-zone" action="/" enctype="multipart/form-data" method="post"
             class="upload-form d-flex flex-column align-items-center text-center p-4 mb-4 w-50">
-
             <img src="statics/upload.png" alt="upload.png" class="img-fluid my-5">
             <p class="mb-1">Select a file or drag and drop here</p>
             <p class="text-muted small">Only support .jpg, .png and gif.<br>Maximum file size is 5MB</p>
@@ -49,7 +48,6 @@
                 <input id="file-upload" type="file" name="file" accept=".jpg,.jpeg,.png,.gif" required hidden>
             </label>
             <div class="file-selected-container"></div>
-
         </form>
         {% if status == "OK" %}
         <div class="d-flex flex-column align-items-start text-start mb-4 w-50">

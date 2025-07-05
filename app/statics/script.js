@@ -36,7 +36,7 @@ function onFileSelected(event) {
     alert.setAttribute("role", "alert");
     alert.innerHTML = `
       Selected file ${file.name}
-      <input type="button" value="x" onclick="cancelFileSelection()" class="btn btn-secondary p-0">
+      <input type="button" value=" x " onclick="cancelFileSelection()" class="btn btn-secondary p-0">
       <input type="submit" value="send" class="btn btn-primary px-1">
     `;
     container.appendChild(alert);
