@@ -52,3 +52,34 @@ function cancelFileSelection() {
   const container = document.querySelector(".file-selected-container");
   container.innerHTML = "";
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+  const dropZone = document.getElementById("drop-zone");
+  const fileInput = document.getElementById("file-upload");
+
+  dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dropZone.classList.add("dragover");
+  });
+
+  dropZone.addEventListener("dragleave", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dropZone.classList.remove("dragover");
+  });
+
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dropZone.classList.remove("dragover");
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const dt = new DataTransfer();
+      dt.items.add(files[0]);
+      fileInput.files = dt.files;
+      onFileSelected({target: fileInput});
+    }
+  });
+});

@@ -16,7 +16,7 @@ header {
     transition: border-color 0.3s ease;
 }
 
-.upload-form:hover {
+.upload-form.dragover {
     border-color: #003381;
     background: #F0F0F0;
     cursor: pointer;
