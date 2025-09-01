@@ -7,6 +7,7 @@ from pathlib import Path
 import uvicorn
 import os
 from utils.file_utils import is_allowed_file, get_unique_name, get_images_in_dir, MAX_FILE_SIZE
+from utils.db_utils import get_conn
 
 load_dotenv()
 
@@ -77,6 +78,14 @@ async def images(request: Request, deleted = None):
             "deleted": deleted
         }
     )
+
+@app.get("/images-list")
+async def images_list(request: Request):
+    conn = get_conn()
+    with conn.cursor() as cur:
+        cur.execute("SELECT * FROM images")
+        result = cur.fetchall()
+    return {"status": "OK", "images": result}
 
 @app.post("/delete")
 async def delete(request: Request, api_key: str = Form(...), image_name: str = Form(...)):
