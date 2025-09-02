@@ -1,17 +1,20 @@
-from fastapi import FastAPI, Request, UploadFile, File, Form, HTTPException
-from fastapi.responses import HTMLResponse, PlainTextResponse
+import os
+import math
+import uvicorn
+from fastapi import FastAPI, Request, UploadFile, File, Form, HTTPException, Query
+from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.middleware.sessions import SessionMiddleware
 from dotenv import load_dotenv
 from pathlib import Path
-import uvicorn
-import os
 from utils.file_utils import is_allowed_file, get_unique_name, get_images_in_dir, MAX_FILE_SIZE
 from utils.db_utils import get_conn
 
 load_dotenv()
 
 app = FastAPI()
+app.add_middleware(SessionMiddleware, secret_key=os.getenv('SESSION_SECRET_KEY'))
 app.mount("/statics", StaticFiles(directory="statics"), name="statics")
 app.mount("/image", StaticFiles(directory="images"), name="image")
 templates = Jinja2Templates(directory="templates")
@@ -75,12 +78,18 @@ async def upload(request: Request, file: UploadFile = File(...)):
     )
 
 @app.get("/images", response_class=HTMLResponse)
-async def images(request: Request, deleted = None, offset = 0):
+async def images(request: Request, current_page: int = Query(default=1, alias="page")):
+    deleted = request.session.pop("deleted", None)
     conn = get_conn()
+    offset = (current_page - 1) * 5
+
     with conn.cursor() as cur:
+        length = cur.execute("SELECT count(*) FROM images").fetchone()[0]
         cur.execute("SELECT * FROM images ORDER BY upload_time DESC LIMIT 5 OFFSET %s", (offset,))
         result = cur.fetchall()
     
+    total_pages = math.ceil(length / 5)
+
     return templates.TemplateResponse(
         "images.html",
         {
@@ -88,14 +97,16 @@ async def images(request: Request, deleted = None, offset = 0):
             "status": "OK",
             "images": result,
             "deleted": deleted,
-            "offset": offset
+            "total_pages": total_pages,
+            "current_page": current_page
         }
     )
 
 @app.post("/delete")
 async def delete(request: Request, api_key: str = Form(...), image_id: int = Form(...)):
         if api_key != os.getenv('API_KEY'):
-            return await images(request, False, 0)
+            request.session["deleted"] = False
+            return RedirectResponse(url=f"/images", status_code=303)
         else:
             conn = get_conn()
             with conn.cursor() as cur:
@@ -126,8 +137,8 @@ async def delete(request: Request, api_key: str = Form(...), image_id: int = For
                 path = images_dir/image_name
                 if path.exists():
                     path.unlink()
-
-            return await images(request, True, 0)
+            request.session["deleted"] = True
+            return RedirectResponse(url=f"/images", status_code=303)
 
 if __name__ == '__main__':
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
