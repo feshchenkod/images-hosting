@@ -80,15 +80,21 @@ async def upload(request: Request, file: UploadFile = File(...)):
 @app.get("/images", response_class=HTMLResponse)
 async def images(request: Request, current_page: int = Query(default=1, alias="page")):
     deleted = request.session.pop("deleted", None)
+    
     conn = get_conn()
+    with conn.cursor() as cur:
+        length = cur.execute("SELECT count(*) FROM images").fetchone()[0]
+    
+    total_pages = math.ceil(length / 5)
+
+    if current_page < 1 or current_page > total_pages:
+         return RedirectResponse(url=f"/images", status_code=303)
+
     offset = (current_page - 1) * 5
 
     with conn.cursor() as cur:
-        length = cur.execute("SELECT count(*) FROM images").fetchone()[0]
         cur.execute("SELECT * FROM images ORDER BY upload_time DESC LIMIT 5 OFFSET %s", (offset,))
-        result = cur.fetchall()
-    
-    total_pages = math.ceil(length / 5)
+        result = cur.fetchall()    
 
     return templates.TemplateResponse(
         "images.html",
