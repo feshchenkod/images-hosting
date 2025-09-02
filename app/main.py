@@ -75,48 +75,59 @@ async def upload(request: Request, file: UploadFile = File(...)):
     )
 
 @app.get("/images", response_class=HTMLResponse)
-async def images(request: Request, deleted = None):
-    images = []
-    files = get_images_in_dir("images")
-    for file in files:
-        url = f"{request.base_url}image/{file.name}"
-        images.append({"name":file.name, "url": url})
+async def images(request: Request, deleted = None, offset = 0):
+    conn = get_conn()
+    with conn.cursor() as cur:
+        cur.execute("SELECT * FROM images ORDER BY upload_time DESC LIMIT 5 OFFSET %s", (offset,))
+        result = cur.fetchall()
+    
     return templates.TemplateResponse(
         "images.html",
         {
             "request": request,
             "status": "OK",
-            "images": images,
-            "deleted": deleted
+            "images": result,
+            "deleted": deleted,
+            "offset": offset
         }
     )
 
-@app.get("/images-list")
-async def images_list(request: Request):
-    conn = get_conn()
-    with conn.cursor() as cur:
-        cur.execute("SELECT * FROM images")
-        result = cur.fetchall()
-    return {"status": "OK", "images": result}
-
 @app.post("/delete")
-async def delete(request: Request, api_key: str = Form(...), image_name: str = Form(...)):
+async def delete(request: Request, api_key: str = Form(...), image_id: int = Form(...)):
         if api_key != os.getenv('API_KEY'):
-            return await images(request, False)
+            return await images(request, False, 0)
         else:
-            images_dir = Path("images")
-            path = images_dir/image_name
-            if path.exists():
-                path.unlink()
-                conn = get_conn()
+            conn = get_conn()
             with conn.cursor() as cur:
+
+                image_name = ''.join(cur.execute("""
+                    SELECT filename, file_type
+                    FROM images
+                    WHERE id = %s;
+                    """, (image_id,)
+                ).fetchone())
+
                 cur.execute("""
                     DELETE FROM images
-                    WHERE filename = %s;
-                    """, (path.stem,)
+                    WHERE id = %s;
+                    """, (image_id,)
                 )
                 conn.commit()
-            return await images(request, True)
+
+                image_count = cur.execute("""
+                    SELECT count(*)
+                    FROM images
+                    WHERE filename = %s;
+                    """, (image_name.split('.')[0],)
+                ).fetchone()[0]
+
+            if not image_count:
+                images_dir = Path("images")
+                path = images_dir/image_name
+                if path.exists():
+                    path.unlink()
+
+            return await images(request, True, 0)
 
 if __name__ == '__main__':
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

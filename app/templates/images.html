@@ -57,8 +57,14 @@
                 <div class="col-2">
                     Image
                 </div>
-                <div class="col-8">
-                    URL
+                <div class="col-3">
+                    Name
+                </div>
+                <div class="col-2">
+                    Size
+                </div>
+                <div class="col-2">
+                    Date
                 </div>
                 <div class="col-2">
                     Delete
@@ -68,16 +74,23 @@
 
             <div class="row align-items-center mb-2">
                 <div class="col-2">
-                    <img src="{{ item.url }}" class="img-thumbnail me-3 rounded"
+                    <img src="image/{{ item[1] }}{{ item[5] }}" class="img-thumbnail me-3 rounded"
                         style="min-height: 40px; min-width: 40px; max-height: 60px; width: auto; height: auto;"
                         alt="preview">
                 </div>
-                <div class="col-8 text-break">
-                    <a href="{{ item.url }}" class="text-decoration-none text-primary">{{ item.name }}</a>
+                <div class="col-3 text-break">
+                    <a href="image/{{ item[1] }}{{ item[5] }}" class="text-decoration-none text-primary">{{ item[2]}}-{{
+                        item[0]}}</a>
+                </div>
+                <div class="col-2 text-break">
+                    {{ item[3] }}
+                </div>
+                <div class="col-2 text-break">
+                    {{ item[4] }}
                 </div>
                 <div class="col-2">
                     <img src="statics/delete.png" alt="delete.ico" class="btn btn-sm btn-danger rounded"
-                        data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-item-name="{{ item.name }}">
+                        data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-item-name="{{ item[0] }}">
                 </div>
             </div>
             {% endfor %}
@@ -95,7 +108,7 @@
                     <div class="modal-body">
                         <form id="deleteForm" action="/delete" method="post"
                             class="d-flex flex-column align-items-center text-center p-4 mb-4">
-                            <input type="hidden" class="form-control" id="imageName" name="image_name">
+                            <input type="hidden" class="form-control" id="imageId" name="image_id">
                             <div class="mb-1 row">
                                 <label for="inputApiKey" class="col-3 col-form-label">API Key</label>
                                 <div class="col-9">
@@ -123,11 +136,11 @@
         if (deleteModal) {
             deleteModal.addEventListener('show.bs.modal', event => {
                 const button = event.relatedTarget
-                const imageName = button.getAttribute('data-bs-item-name')
+                const imageId = button.getAttribute('data-bs-item-name')
 
                 const modalTitle = deleteModal.querySelector('.modal-title')
                 const modalBodyInput = deleteModal.querySelector('.modal-body input')
-                modalBodyInput.value = imageName
+                modalBodyInput.value = imageId
             })
         }
     </script>
